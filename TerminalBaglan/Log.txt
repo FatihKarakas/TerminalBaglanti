@@ -1,0 +1,2 @@
+﻿使用的zkemkeeper必须编译成AnyCPU，否则报错
+本程序是基于Windows的NetFramework类库，无法用于Linux系统。
