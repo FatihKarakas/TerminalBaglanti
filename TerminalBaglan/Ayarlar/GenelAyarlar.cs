@@ -255,7 +255,7 @@ public class GenelAyarlar
         axCZKEM1.GetDeviceStatus(GetMachineNumber(), 6, ref recordCnt);
         axCZKEM1.GetDeviceStatus(GetMachineNumber(), 21, ref faceCnt);
         axCZKEM1.EnableDevice(GetMachineNumber(), true);//enable the device
-        lblOutputInfo.Items.Add("Get the device capacity successfully");
+        lblOutputInfo.Items.Add("Terminal sayısal bilgileri eklendi");
         ret = 1;
         return ret;
     }
