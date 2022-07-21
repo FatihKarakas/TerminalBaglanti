@@ -70,6 +70,9 @@ namespace TerminalBaglan
                 statusStrip1.BackColor = Color.Green;
                 toolStripStatusLabel1.Text = "Terminal Bağlantısı Kuruldu";
                 Cursor = Cursors.Default;
+                dataGridView1.DataSource = g.sta_getEmployees();
+               // dataGridView1.Sort(dataGridView1.Columns[1], ListSortDirection.Ascending);
+
 
             }
             else
@@ -110,6 +113,31 @@ namespace TerminalBaglan
         private void btnGetDataInfo_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void dataGridView1_Click(object sender, EventArgs e)
+        {
+           // PersonelBilgi pers = new PersonelBilgi();
+            txtUserID.Text = dataGridView1.CurrentRow.Cells[0].Value.ToString();
+            txtName.Text= dataGridView1.CurrentRow.Cells[1].Value.ToString();
+            txtCardnumber.Text = dataGridView1.CurrentRow.Cells[4].Value.ToString();
+            //pers.ShowDialog();
+            //MessageBox.Show("Adı: " + dataGridView1.CurrentRow.Cells[1].Value.ToString(), "Personel", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            var sonuc = g.axCZKEM1.SSR_SetUserInfo(1, txtUserID.Text, txtName.Text.Trim(), "", 0, true);
+            if (sonuc)
+            {
+                dataGridView1.DataSource = g.sta_getEmployees();
+                dataGridView1.Refresh();
+                MessageBox.Show("Personel Bilgisi Terminalde Güncellendi", "Personel Güncelleme", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show("Personel Bilgisi Güncelenemedi", "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

@@ -324,6 +324,61 @@ public class GenelAyarlar
         this.axCZKEM1.OnKeyPress += new zkemkeeper._IZKEMEvents_OnKeyPressEventHandler(axCZKEM1_OnKeyPress);
         this.axCZKEM1.OnEnrollFinger += new zkemkeeper._IZKEMEvents_OnEnrollFingerEventHandler(axCZKEM1_OnEnrollFinger);
     }
+
+    public int sta_GetUserInfo(ListBox lblOutputInfo, TextBox txtUserID, TextBox txtName, ComboBox cbPrivilege, TextBox txtCardnumber, TextBox txtPassword)
+    {
+        if (GetConnectState() == false)
+        {
+            lblOutputInfo.Items.Add("*Önce bağlantı kurulması lazım");
+            return -1024;
+        }
+
+       
+
+        int iPIN2Width = 0;
+        string strTemp = "";
+        axCZKEM1.GetSysOption(GetMachineNumber(), "~PIN2Width", out strTemp);
+        iPIN2Width = Convert.ToInt32(strTemp);
+
+       
+
+        int idwErrorCode = 0;
+        int iPrivilege = 0;
+        string strName = "";
+        string strCardno = "";
+        string strPassword = "";
+        bool bEnabled = false;
+
+        axCZKEM1.EnableDevice(iMachineNumber, false);
+        if (axCZKEM1.SSR_GetUserInfo(iMachineNumber, txtUserID.Text.Trim(), out strName, out strPassword, out iPrivilege, out bEnabled))//upload the user's information(card number included)
+        {
+            axCZKEM1.GetStrCardNumber(out strCardno);
+            if (strCardno.Equals("0"))
+            {
+                strCardno = "";
+            }
+            txtName.Text = strName;
+            txtPassword.Text = strPassword;
+            txtCardnumber.Text = strCardno;
+            cbPrivilege.SelectedIndex = iPrivilege;
+            lblOutputInfo.Items.Add("Bilgiler Getirildi");
+        }
+        else
+        {
+            axCZKEM1.GetLastError(ref idwErrorCode);
+            //modify by Leonard 2017/12/18
+            txtName.Text = " ";
+            txtPassword.Text = " ";
+            txtCardnumber.Text = " ";
+            cbPrivilege.SelectedIndex = 5;
+            lblOutputInfo.Items.Add("The User is not exist");
+            //end by Leonard
+            lblOutputInfo.Items.Add("*Operation failed,ErrorCode=" + idwErrorCode.ToString());
+        }
+        axCZKEM1.EnableDevice(iMachineNumber, true);
+
+        return 1;
+    }
     public int sta_RegRealTime(ListBox lblOutputInfo)
     {
         if (GetConnectState() == false)
@@ -597,159 +652,126 @@ public class GenelAyarlar
         }
         return 1;
     }
-    //public int sta_SetUserInfo(ListBox lblOutputInfo, TextBox txtUserID, TextBox txtName, string cbPrivilege, TextBox txtCardnumber, TextBox txtPassword)
-    //{
-    //    if (GetConnectState() == false)
-    //    {
-    //        lblOutputInfo.Items.Add("*Önce Terminal bağlantısını kurunuz!");
-    //        return -1024;
-    //    }
-    //    if (txtUserID.Text.Trim() == "" || cbPrivilege.Text.Trim() == "")
-    //    {
-    //        lblOutputInfo.Items.Add("*Please input data first!");
-    //        return -1023;
-    //    }
-    //    int iPrivilege = cbPrivilege.SelectedIndex;
-    //    bool bFlag = false;
-    //    if (iPrivilege == 5)
-    //    {
-    //        lblOutputInfo.Items.Add("*User Defined Role is Error! Please Register again!");
-    //        return -1023;
-    //    }
-    //    /*
-    //    if(iPrivilege == 4)
-    //    {
-    //        axCZKEM1.IsUserDefRoleEnable(iMachineNumber, 4, out bFlag);
-    //        if (bFlag == false)
-    //        {
-    //            lblOutputInfo.Items.Add("*User Defined Role is unable!");
-    //            return -1023;
-    //        }
-    //    }
-    //     */
-    //    //lblOutputInfo.Items.Add("[func IsUserDefRoleEnable]Temporarily unsupported");
-    //    int iPIN2Width = 0;
-    //    int iIsABCPinEnable = 0;
-    //    int iT9FunOn = 0;
-    //    string strTemp = "";
-    //    axCZKEM1.GetSysOption(GetMachineNumber(), "~PIN2Width", out strTemp);
-    //    iPIN2Width = Convert.ToInt32(strTemp);
-    //    axCZKEM1.GetSysOption(GetMachineNumber(), "~IsABCPinEnable", out strTemp);
-    //    iIsABCPinEnable = Convert.ToInt32(strTemp);
-    //    axCZKEM1.GetSysOption(GetMachineNumber(), "~T9FunOn", out strTemp);
-    //    iT9FunOn = Convert.ToInt32(strTemp);
-    //    /*
-    //    axCZKEM1.GetDeviceInfo(iMachineNumber, 76, ref iPIN2Width);
-    //    axCZKEM1.GetDeviceInfo(iMachineNumber, 77, ref iIsABCPinEnable);
-    //    axCZKEM1.GetDeviceInfo(iMachineNumber, 78, ref iT9FunOn);
-    //    */
-    //    if (txtUserID.Text.Length > iPIN2Width)
-    //    {
-    //        lblOutputInfo.Items.Add("*User ID error! The max length is " + iPIN2Width.ToString());
-    //        return -1022;
-    //    }
-    //    if (iIsABCPinEnable == 0 || iT9FunOn == 0)
-    //    {
-    //        if (txtUserID.Text.Substring(0, 1) == "0")
-    //        {
-    //            lblOutputInfo.Items.Add("*User ID error! The first letter can not be as 0");
-    //            return -1022;
-    //        }
-    //        foreach (char tempchar in txtUserID.Text.ToCharArray())
-    //        {
-    //            if (!(char.IsDigit(tempchar)))
-    //            {
-    //                lblOutputInfo.Items.Add("*User ID error! User ID only support digital");
-    //                return -1022;
-    //            }
-    //        }
-    //    }
-    //    int idwErrorCode = 0;
-    //    string sdwEnrollNumber = txtUserID.Text.Trim();
-    //    string sName = txtName.Text.Trim();
-    //    string sCardnumber = txtCardnumber.Text.Trim();
-    //    string sPassword = txtPassword.Text.Trim();
-    //    bool bEnabled = true;
-    //    /*if (iPrivilege == 4)
-    //    {
-    //        bEnabled = false;
-    //        iPrivilege = 0;
-    //    }
-    //    else
-    //    {
-    //        bEnabled = true;
-    //    }*/
-    //    axCZKEM1.EnableDevice(iMachineNumber, false);
-    //    axCZKEM1.SetStrCardNumber(sCardnumber);//Before you using function SetUserInfo,set the card number to make sure you can upload it to the device
-    //    if (axCZKEM1.SSR_SetUserInfo(iMachineNumber, sdwEnrollNumber, sName, sPassword, iPrivilege, bEnabled))//upload the user's information(card number included)
-    //    {
-    //        lblOutputInfo.Items.Add("Set user information successfully");
-    //    }
-    //    else
-    //    {
-    //        axCZKEM1.GetLastError(ref idwErrorCode);
-    //        lblOutputInfo.Items.Add("*Operation failed,ErrorCode=" + idwErrorCode.ToString());
-    //    }
-    //    axCZKEM1.RefreshData(iMachineNumber);//the data in the device should be refreshed
-    //    axCZKEM1.EnableDevice(iMachineNumber, true);
-    //    return 1;
-    //}
-    //public int sta_GetUserInfo(ListBox lblOutputInfo, TextBox txtUserID, TextBox txtName, string cbPrivilege, TextBox txtCardnumber, TextBox txtPassword)
-    //{
-    //    if (GetConnectState() == false)
-    //    {
-    //        lblOutputInfo.Items.Add("*Önce Terminal bağlantısını kurunuz!");
-    //        return -1024;
-    //    }
-    //    if (txtUserID.Text.Trim() == "")
-    //    {
-    //        lblOutputInfo.Items.Add("*Please input user id first!");
-    //        return -1023;
-    //    }
-    //    int iPIN2Width = 0;
-    //    string strTemp = "";
-    //    axCZKEM1.GetSysOption(GetMachineNumber(), "~PIN2Width", out strTemp);
-    //    iPIN2Width = Convert.ToInt32(strTemp);
-    //    if (txtUserID.Text.Length > iPIN2Width)
-    //    {
-    //        lblOutputInfo.Items.Add("*User ID error! The max length is " + iPIN2Width.ToString());
-    //        return -1022;
-    //    }
-    //    int idwErrorCode = 0;
-    //    int iPrivilege = 0;
-    //    string strName = "";
-    //    string strCardno = "";
-    //    string strPassword = "";
-    //    bool bEnabled = false;
-    //    axCZKEM1.EnableDevice(iMachineNumber, false);
-    //    if (axCZKEM1.SSR_GetUserInfo(iMachineNumber, txtUserID.Text.Trim(), out strName, out strPassword, out iPrivilege, out bEnabled))//upload the user's information(card number included)
-    //    {
-    //        axCZKEM1.GetStrCardNumber(out strCardno);
-    //        if (strCardno.Equals("0"))
-    //        {
-    //            strCardno = "";
-    //        }
-    //        txtName.Text = strName;
-    //        txtPassword.Text = strPassword;
-    //        txtCardnumber.Text = strCardno;
-    //        cbPrivilege.SelectedIndex = iPrivilege;
-    //        lblOutputInfo.Items.Add("Get user information successfully");
-    //    }
-    //    else
-    //    {
-    //        axCZKEM1.GetLastError(ref idwErrorCode);
-    //        //modify by Leonard 2017/12/18
-    //        txtName.Text = " ";
-    //        txtPassword.Text = " ";
-    //        txtCardnumber.Text = " ";
-    //        cbPrivilege.SelectedIndex = 5;
-    //        lblOutputInfo.Items.Add("The User is not exist");
-    //        //end by Leonard
-    //        lblOutputInfo.Items.Add("*Operation failed,ErrorCode=" + idwErrorCode.ToString());
-    //    }
-    //    axCZKEM1.EnableDevice(iMachineNumber, true);
-    //    return 1;
-    //}
+    public int sta_SetUserInfo(ListBox lblOutputInfo, TextBox txtUserID, TextBox txtName,  TextBox txtCardnumber)
+    {
+       
+        int iPIN2Width = 0;
+        int iIsABCPinEnable = 0;
+        int iT9FunOn = 0;
+        string strTemp = "";
+        axCZKEM1.GetSysOption(GetMachineNumber(), "~PIN2Width", out strTemp);
+        iPIN2Width = Convert.ToInt32(strTemp);
+        axCZKEM1.GetSysOption(GetMachineNumber(), "~IsABCPinEnable", out strTemp);
+        iIsABCPinEnable = Convert.ToInt32(strTemp);
+        axCZKEM1.GetSysOption(GetMachineNumber(), "~T9FunOn", out strTemp);
+        iT9FunOn = Convert.ToInt32(strTemp);
+    
+        if (txtUserID.Text.Length > iPIN2Width)
+        {
+            lblOutputInfo.Items.Add("*User ID hatası Maksimum değer üzerinde " + iPIN2Width.ToString());
+            return -1022;
+        }
+        if (iIsABCPinEnable == 0 || iT9FunOn == 0)
+        {
+            if (txtUserID.Text.Substring(0, 1) == "0")
+            {
+                lblOutputInfo.Items.Add("*User ID hatas! 0 User Id olamaz");
+                return -1022;
+            }
+            foreach (char tempchar in txtUserID.Text.ToCharArray())
+            {
+                if (!(char.IsDigit(tempchar)))
+                {
+                    lblOutputInfo.Items.Add("*User ID hatası! User ID sadece sayı olabilir.");
+                    return -1022;
+                }
+            }
+        }
+        int idwErrorCode = 0;
+        string sdwEnrollNumber = txtUserID.Text.Trim();
+        string sName = txtName.Text.Trim();
+        string sCardnumber = txtCardnumber.Text.Trim();
+        bool bEnabled = true;
+        /*if (iPrivilege == 4)
+        {
+            bEnabled = false;
+            iPrivilege = 0;
+        }
+        else
+        {
+            bEnabled = true;
+        }*/
+        axCZKEM1.EnableDevice(iMachineNumber, false);
+        axCZKEM1.SetStrCardNumber(sCardnumber);//Before you using function SetUserInfo,set the card number to make sure you can upload it to the device
+        if (axCZKEM1.SSR_SetUserInfo(iMachineNumber, sdwEnrollNumber, sName, "0", 0, bEnabled))//upload the user's information(card number included)
+        {
+            lblOutputInfo.Items.Add("Kullanıcı Bilgisi Düzenlendi");
+        }
+        else
+        {
+            axCZKEM1.GetLastError(ref idwErrorCode);
+            lblOutputInfo.Items.Add("*İşlem hatası,ErrorCode=" + idwErrorCode.ToString());
+        }
+        axCZKEM1.RefreshData(iMachineNumber);//the data in the device should be refreshed
+        axCZKEM1.EnableDevice(iMachineNumber, true);
+        return 1;
+    }
+    public int sta_GetUserInfo(ListBox lblOutputInfo, TextBox txtUserID, TextBox txtName, string cbPrivilege, TextBox txtCardnumber, TextBox txtPassword)
+    {
+        if (GetConnectState() == false)
+        {
+            lblOutputInfo.Items.Add("*Önce Terminal bağlantısını kurunuz!");
+            return -1024;
+        }
+        if (txtUserID.Text.Trim() == "")
+        {
+            lblOutputInfo.Items.Add("*Please input user id first!");
+            return -1023;
+        }
+        int iPIN2Width = 0;
+        string strTemp = "";
+        axCZKEM1.GetSysOption(GetMachineNumber(), "~PIN2Width", out strTemp);
+        iPIN2Width = Convert.ToInt32(strTemp);
+        if (txtUserID.Text.Length > iPIN2Width)
+        {
+            lblOutputInfo.Items.Add("*User ID error! The max length is " + iPIN2Width.ToString());
+            return -1022;
+        }
+        int idwErrorCode = 0;
+        int iPrivilege = 0;
+        string strName = "";
+        string strCardno = "";
+        string strPassword = "";
+        bool bEnabled = false;
+        axCZKEM1.EnableDevice(iMachineNumber, false);
+        if (axCZKEM1.SSR_GetUserInfo(iMachineNumber, txtUserID.Text.Trim(), out strName, out strPassword, out iPrivilege, out bEnabled))//upload the user's information(card number included)
+        {
+            axCZKEM1.GetStrCardNumber(out strCardno);
+            if (strCardno.Equals("0"))
+            {
+                strCardno = "";
+            }
+            txtName.Text = strName;
+            txtPassword.Text = strPassword;
+            txtCardnumber.Text = strCardno;
+            //cbPrivilege.SelectedIndex = iPrivilege;
+            lblOutputInfo.Items.Add("Get user information successfully");
+        }
+        else
+        {
+            axCZKEM1.GetLastError(ref idwErrorCode);
+            //modify by Leonard 2017/12/18
+            txtName.Text = " ";
+            txtPassword.Text = " ";
+            txtCardnumber.Text = " ";
+           // cbPrivilege.SelectedIndex = 5;
+            lblOutputInfo.Items.Add("The User is not exist");
+            //end by Leonard
+            lblOutputInfo.Items.Add("*Operation failed,ErrorCode=" + idwErrorCode.ToString());
+        }
+        axCZKEM1.EnableDevice(iMachineNumber, true);
+        return 1;
+    }
     public int sta_GetHIDEventCardNum(ListBox lblOutputInfo)
     {
         if (GetConnectState() == false)
@@ -2109,7 +2131,8 @@ public class GenelAyarlar
         {
             axCZKEM1.EnableDevice(iMachineNumber, true);
         }
-        return employees;
+        List<Personel> SortedList = employees.OrderBy(o => o.AdiSoyadi).ToList();
+        return SortedList;
     }
     /// <summary>
     /// 
