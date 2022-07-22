@@ -90,12 +90,38 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="TheSDK\Delete_SDK.bat" />
+    <None Include="TheSDK\Register_SDK.bat" />
+    <None Include="TheSDK\UpdateSDK.dat" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Log.txt" />
+    <Content Include="TheSDK\cmd.exe" />
+    <Content Include="TheSDK\commpro.dll" />
+    <Content Include="TheSDK\comms.dll" />
+    <Content Include="TheSDK\FR_Chs.dll" />
+    <Content Include="TheSDK\FR_cht.dll" />
+    <Content Include="TheSDK\FR_Eng.dll" />
+    <Content Include="TheSDK\libusb0.dll" />
+    <Content Include="TheSDK\libusb0_x64.dll" />
+    <Content Include="TheSDK\midas.dll" />
+    <Content Include="TheSDK\plcommpro.dll" />
+    <Content Include="TheSDK\plcomms.dll" />
+    <Content Include="TheSDK\plrscagent.dll" />
+    <Content Include="TheSDK\plrscomm.dll" />
+    <Content Include="TheSDK\pltcpcomm.dll" />
+    <Content Include="TheSDK\QEEnglish.dll" />
+    <Content Include="TheSDK\rscagent.dll" />
+    <Content Include="TheSDK\rscomm.dll" />
+    <Content Include="TheSDK\tcpcomm.dll" />
+    <Content Include="TheSDK\Tested.txt" />
+    <Content Include="TheSDK\usbcomm.dll" />
+    <Content Include="TheSDK\usbstd.dll" />
+    <Content Include="TheSDK\zkemkeeper.dll" />
+    <Content Include="TheSDK\zkemsdk.dll" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Icon\" />

@@ -15,7 +15,7 @@ namespace TerminalBaglan
         GenelAyarlar g = new GenelAyarlar();
         public PersonelBilgi()
         {
-                       InitializeComponent();
+            InitializeComponent();
         }
 
         private void PersonelBilgi_Load(object sender, EventArgs e)
@@ -24,8 +24,6 @@ namespace TerminalBaglan
             Cursor = Cursors.WaitCursor;
             g.SetMachineNumber(1);
             g.bIsConnected = true;
-         
-
             Cursor = Cursors.Default;
         }
 
